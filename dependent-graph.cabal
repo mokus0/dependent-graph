@@ -1,0 +1,27 @@
+name:                   dependent-graph
+version:                0.0.0.1
+stability:              incubation
+
+cabal-version:          >= 1.2
+build-type:             Simple
+
+author:                 James Cook <mokus@deepbondi.net>
+maintainer:             James Cook <mokus@deepbondi.net>
+license:                Unspecified
+homepage:               /dev/null
+
+category:               Unclassified
+synopsis:               Dependent graph data structure
+description:            Dependent graph data structure.  That is, a graph with
+                        a Haskell type associated with each node, and each
+                        edge's type dependent on the types of the nodes it
+                        connects.
+                        
+                        This is nowhere near a complete implementation.  It's
+                        more of a sketch of some interesting ideas at this
+                        point.
+
+Library
+  hs-source-dirs:       src
+  exposed-modules:      Data.Dependent.Graph
+  build-depends:        base >= 3, containers, dependent-sum, dependent-maps
