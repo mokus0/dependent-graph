@@ -24,4 +24,4 @@ description:            Dependent graph data structure.  That is, a graph with
 Library
   hs-source-dirs:       src
   exposed-modules:      Data.Dependent.Graph
-  build-depends:        base >= 3, containers, dependent-sum, dependent-maps
+  build-depends:        base >= 3, containers, dependent-sum, dependent-map, thrist

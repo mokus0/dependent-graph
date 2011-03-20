@@ -1,6 +1,7 @@
 {-# LANGUAGE GADTs, RankNTypes, UndecidableInstances #-}
 module Data.Dependent.Graph where
 
+import Prelude hiding (lookup)
 import Control.Monad
 import qualified Data.Dependent.Map as M
 import Data.Dependent.Sum
@@ -8,6 +9,7 @@ import Data.GADT.Compare
 import Data.GADT.Show
 import Data.Maybe
 import qualified Data.Set as S
+import Data.Thrist
 
 data NodeID obj where
     NodeID :: !(obj t) -> NodeID obj
@@ -25,9 +27,6 @@ instance GEq obj => Eq (NodeID obj) where
 instance GCompare obj => Ord (NodeID obj) where
     compare (NodeID x) (NodeID y) = case gcompare x y of
         GGT -> GT; GEQ -> EQ; GLT -> LT
-
--- data EdgeID obj where
---     EdgeID :: !(obj src) -> !(obj dst) -> EdgeID obj
 
 data EdgeTag f obj arr t where
     EdgeTag :: !(obj src) -> !(obj dst) -> EdgeTag f obj arr (f (arr src dst))
@@ -83,3 +82,19 @@ lookup src dst (Graph nodes edges) = do
     guard (NodeID dst `S.member` nodes)
     M.lookup (EdgeTag src dst) edges
     
+data EdgeID obj src dst =
+    EdgeID !(obj src) !(obj dst)
+    deriving (Eq, Show)
+
+paths :: GCompare node
+    => (forall a. edge a a) 
+    -> (forall a b c. edge b c -> edge a b -> edge a c)
+    -> Graph node edge
+    -> Thrist (EdgeID node) src dst
+    -> [edge src dst]
+paths id (.) graph Nil = [id]
+paths id (.) graph (Cons (EdgeID src dst) path)
+    = do
+        f <- fromMaybe [] (lookup src dst graph)
+        g <- paths id (.) graph path
+        return (g . f)
