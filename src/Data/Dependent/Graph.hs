@@ -10,9 +10,9 @@ import qualified Data.Set as S
 data NodeID obj where
     NodeID :: !(obj t) -> NodeID obj
 
-instance GCompare obj => Eq (NodeID obj) where
-    NodeID x == NodeID y = case gcompare x y of
-        GEQ -> True; _ -> False
+instance GEq obj => Eq (NodeID obj) where
+    NodeID x == NodeID y = case geq x y of
+        Just Refl -> True; _ -> False
 
 instance GCompare obj => Ord (NodeID obj) where
     compare (NodeID x) (NodeID y) = case gcompare x y of
@@ -23,6 +23,12 @@ data EdgeID obj where
 
 data EdgeTag f obj arr t where
     EdgeTag :: !(obj src) -> !(obj dst) -> EdgeTag f obj arr (f (arr src dst))
+
+instance GEq obj => GEq (EdgeTag f obj arr) where
+    geq (EdgeTag src1 dst1) (EdgeTag src2 dst2) = do
+        Refl <- geq src1 src2
+        Refl <- geq dst1 dst2
+        return Refl
 
 instance GCompare obj => GCompare (EdgeTag f obj arr) where
     gcompare (EdgeTag src1 dst1) (EdgeTag src2 dst2) = 
